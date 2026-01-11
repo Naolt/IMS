@@ -1,5 +1,10 @@
 import Image from 'next/image';
+import { Suspense } from 'react';
 import VerifyEmailContent from './_components/VerifyEmailContent';
+
+function VerifyEmailWrapper() {
+    return <VerifyEmailContent />;
+}
 
 export default function VerifyEmail() {
     return (
@@ -18,7 +23,9 @@ export default function VerifyEmail() {
 
             {/*Verify email content*/}
             <div className="flex-1 flex items-center justify-center p-4">
-                <VerifyEmailContent />
+                <Suspense fallback={<div>Loading...</div>}>
+                    <VerifyEmailWrapper />
+                </Suspense>
             </div>
         </main>
     );

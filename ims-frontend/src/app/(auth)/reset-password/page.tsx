@@ -1,5 +1,10 @@
 import Image from 'next/image';
+import { Suspense } from 'react';
 import ResetPasswordForm from './_components/ResetPasswordForm';
+
+function ResetPasswordContent() {
+    return <ResetPasswordForm />;
+}
 
 export default function ResetPassword() {
     return (
@@ -18,7 +23,9 @@ export default function ResetPassword() {
 
             {/*Reset password form*/}
             <div className="flex-1 flex items-center justify-center p-4">
-                <ResetPasswordForm />
+                <Suspense fallback={<div>Loading...</div>}>
+                    <ResetPasswordContent />
+                </Suspense>
             </div>
         </main>
     );
