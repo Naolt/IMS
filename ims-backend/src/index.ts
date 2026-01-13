@@ -14,6 +14,7 @@ import saleRoutes from './routes/sale.routes';
 import userRoutes from './routes/user.routes';
 import aiRoutes from './routes/ai.routes';
 import settingsRoutes from './routes/settings.routes';
+import seedRoutes from './routes/seed.routes';
 import { initializeDatabase } from './config/database';
 import { swaggerSpec } from './config/swagger';
 
@@ -70,6 +71,9 @@ app.use('/api/ai', aiRoutes);
 
 // Settings routes
 app.use('/api/settings', settingsRoutes);
+
+// Seed route (for production database initialization)
+app.use('/api/seed', seedRoutes);
 
 // Swagger Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
