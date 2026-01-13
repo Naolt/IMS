@@ -17,14 +17,14 @@ const baseConfig = {
     subscribers: [],
 };
 
-// Database selection:
-// - If DATABASE_URL env var is set (and in production) -> Use PostgreSQL
-// - Otherwise -> Use SQLite (works for both development and production)
-const dataSourceConfig: DataSourceOptions = config.nodeEnv === 'production' && config.databaseUrl
+// Database selection based on DATABASE_TYPE environment variable
+// - sqlite: Use SQLite (default, works for both development and production)
+// - postgres: Use PostgreSQL (requires DATABASE_URL to be set)
+const dataSourceConfig: DataSourceOptions = config.databaseType === 'postgres'
     ? {
           ...baseConfig,
           type: 'postgres',
-          url: config.databaseUrl,
+          url: config.databaseUrl!,
           ssl: {
               rejectUnauthorized: false, // Required for cloud databases
           },

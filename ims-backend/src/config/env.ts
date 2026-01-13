@@ -4,11 +4,17 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Validate required environment variables
-const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET'];
+const requiredEnvVars = ['JWT_SECRET'];
 for (const envVar of requiredEnvVars) {
     if (!process.env[envVar]) {
         throw new Error(`Missing required environment variable: ${envVar}`);
     }
+}
+
+// Validate database configuration
+const databaseType = process.env.DATABASE_TYPE || 'sqlite';
+if (databaseType === 'postgres' && !process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is required when DATABASE_TYPE is set to "postgres"');
 }
 
 // Export all environment variables with defaults
@@ -18,7 +24,8 @@ export const config = {
     nodeEnv: process.env.NODE_ENV || 'development',
 
     // Database
-    databaseUrl: process.env.DATABASE_URL!,
+    databaseType: databaseType as 'sqlite' | 'postgres',
+    databaseUrl: process.env.DATABASE_URL,
 
     // JWT
     jwtSecret: process.env.JWT_SECRET!,

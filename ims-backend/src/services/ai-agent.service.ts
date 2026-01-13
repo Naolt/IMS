@@ -189,13 +189,13 @@ export class AIAgent {
 // Singleton checkpointer instance
 let checkpointerInstance: PostgresSaver | SqliteSaver | null = null;
 
-// Initialize checkpointer:
-// - If DATABASE_URL env var is set (and in production) -> Use PostgreSQL
-// - Otherwise -> Use SQLite (works for both development and production)
+// Initialize checkpointer based on DATABASE_TYPE environment variable
+// - sqlite: Use SQLite (default, works for both development and production)
+// - postgres: Use PostgreSQL (requires DATABASE_URL to be set)
 export const initializeCheckpointer = async (connectionString?: string) => {
     if (!checkpointerInstance) {
-        if (config.nodeEnv === 'production' && connectionString) {
-            // Use PostgreSQL in production when DATABASE_URL is provided
+        if (config.databaseType === 'postgres' && connectionString) {
+            // Use PostgreSQL when DATABASE_TYPE is set to "postgres"
             const pool = new Pool({
                 connectionString,
                 ssl: {
@@ -207,7 +207,7 @@ export const initializeCheckpointer = async (connectionString?: string) => {
             await checkpointerInstance.setup();
         } else {
             // Use SQLite (creates data/checkpoints.db)
-            // This works for both local development and production deployment without PostgreSQL
+            // This works for both local development and production deployment
             checkpointerInstance = SqliteSaver.fromConnString('data/checkpoints.db');
         }
     }
