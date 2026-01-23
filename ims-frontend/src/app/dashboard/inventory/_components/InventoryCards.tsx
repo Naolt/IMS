@@ -520,7 +520,7 @@ function ProductDetailsDialog({ productId, open, onOpenChange }: ProductDetailsD
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
                 <DialogHeader>
                     <DialogTitle>Product Details</DialogTitle>
                 </DialogHeader>
@@ -554,8 +554,8 @@ function ProductDetailsDialog({ productId, open, onOpenChange }: ProductDetailsD
                             {/* Basic Info */}
                             <div className="space-y-4">
                                 <div>
-                                    <h3 className="text-2xl font-bold">{product.name}</h3>
-                                    <p className="text-muted-foreground">Code: {product.code}</p>
+                                    <h3 className="text-xl md:text-2xl font-bold">{product.name}</h3>
+                                    <p className="text-sm text-muted-foreground">Code: {product.code}</p>
                                 </div>
 
                                 <div className="space-y-2">
@@ -592,8 +592,8 @@ function ProductDetailsDialog({ productId, open, onOpenChange }: ProductDetailsD
                         {/* Variants Table */}
                         <div>
                             <h4 className="font-semibold mb-3">Variants</h4>
-                            <div className="border rounded-lg overflow-hidden">
-                                <table className="w-full">
+                            <div className="border rounded-lg overflow-x-auto">
+                                <table className="w-full min-w-[600px]">
                                     <thead className="bg-muted">
                                         <tr>
                                             <th className="text-left p-3 text-sm font-medium">Size</th>
