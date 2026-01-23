@@ -230,15 +230,15 @@ export default function AIAssistantPage() {
     ];
 
     return (
-        <div className="h-[calc(100vh-4rem)] flex flex-col p-8">
+        <div className="h-[calc(100vh-4rem)] flex flex-col p-4 md:p-8">
             {/* Header - Compact */}
-            <div className="flex items-center gap-3 mb-4 flex-shrink-0">
+            <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4 flex-shrink-0">
                 <div className="p-2 bg-primary/10 rounded-lg">
-                    <Sparkles className="h-5 w-5 text-primary" />
+                    <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold">AI Assistant</h1>
-                    <p className="text-sm text-muted-foreground">
+                    <h1 className="text-xl md:text-2xl font-bold">AI Assistant</h1>
+                    <p className="text-xs md:text-sm text-muted-foreground">
                         Ask me anything about your inventory
                     </p>
                 </div>
@@ -268,15 +268,15 @@ export default function AIAssistantPage() {
 
             {/* Chat Container */}
             <Card className="flex-1 flex flex-col min-h-0">
-                <CardHeader className="border-b flex-shrink-0">
+                <CardHeader className="border-b flex-shrink-0 p-3 md:p-6">
                     <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">Chat</CardTitle>
-                        <div className="flex gap-2">
+                        <CardTitle className="text-base md:text-lg">Chat</CardTitle>
+                        <div className="flex gap-1 md:gap-2">
                             <Sheet open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
                                 <SheetTrigger asChild>
                                     <Button variant="outline" size="sm">
-                                        <History className="h-4 w-4 mr-2" />
-                                        History
+                                        <History className="h-4 w-4 md:mr-2" />
+                                        <span className="hidden md:inline">History</span>
                                     </Button>
                                 </SheetTrigger>
                                 <SheetContent>
@@ -353,15 +353,15 @@ export default function AIAssistantPage() {
                                 </SheetContent>
                             </Sheet>
                             <Button variant="outline" size="sm" onClick={handleNewConversation}>
-                                <Plus className="h-4 w-4 mr-2" />
-                                New Chat
+                                <Plus className="h-4 w-4 md:mr-2" />
+                                <span className="hidden md:inline">New Chat</span>
                             </Button>
                         </div>
                     </div>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col p-0 min-h-0">
                     {/* Messages */}
-                    <div className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0">
+                    <div className="flex-1 overflow-y-auto p-3 md:p-6 space-y-3 md:space-y-4 min-h-0">
                         {isLoadingHistory ? (
                             <div className="h-full flex items-center justify-center">
                                 <div className="flex flex-col items-center gap-3">
@@ -415,7 +415,7 @@ export default function AIAssistantPage() {
                                         }`}
                                     >
                                         <div
-                                            className={`max-w-[80%] rounded-lg px-4 py-3 ${
+                                            className={`max-w-[85%] md:max-w-[80%] rounded-lg px-3 py-2 md:px-4 md:py-3 ${
                                                 message.role === 'user'
                                                     ? 'bg-primary text-primary-foreground'
                                                     : 'bg-muted text-foreground border border-border'
@@ -426,14 +426,14 @@ export default function AIAssistantPage() {
                                                     {message.content}
                                                 </p>
                                             ) : (
-                                                <div className="prose prose-sm dark:prose-invert max-w-none [&>*]:text-foreground">
+                                                <div className="prose prose-xs md:prose-sm dark:prose-invert max-w-none [&>*]:text-foreground [&>p]:text-sm [&>p]:md:text-base">
                                                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                                         {message.content}
                                                     </ReactMarkdown>
                                                 </div>
                                             )}
                                             <p
-                                                className={`text-xs mt-1 ${
+                                                className={`text-[10px] md:text-xs mt-1 ${
                                                     message.role === 'user'
                                                         ? 'text-primary-foreground/70'
                                                         : 'text-muted-foreground'
