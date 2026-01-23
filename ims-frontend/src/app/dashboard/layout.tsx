@@ -9,10 +9,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <ProtectedRoute>
             <SidebarProvider>
                 <AppSidebar />
-                <main className="w-full h-screen overflow-y-auto">
+                <main className="w-full h-screen overflow-y-auto overflow-x-hidden">
                     <Header />
                     <Separator />
-                    <div className="w-full p-8">{children}</div>
+                    <div className="w-full p-4 md:p-8">{children}</div>
                 </main>
             </SidebarProvider>
         </ProtectedRoute>
