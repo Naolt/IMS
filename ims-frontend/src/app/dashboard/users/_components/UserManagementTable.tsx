@@ -120,18 +120,6 @@ export default function UserManagementTable() {
             }
         },
         {
-            accessorKey: 'lastLogin',
-            header: 'Last Login',
-            cell: ({ row }) => {
-                const lastLogin = row.getValue('lastLogin') as
-                    | string
-                    | undefined;
-                if (!lastLogin) return <span className="text-muted-foreground">Never</span>;
-                const date = new Date(lastLogin);
-                return format(date, 'MMM dd, yyyy HH:mm');
-            }
-        },
-        {
             id: 'actions',
             cell: ({ row }) => {
                 const user = row.original;
