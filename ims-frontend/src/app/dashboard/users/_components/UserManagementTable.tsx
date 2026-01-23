@@ -330,8 +330,8 @@ function AddUserForm({ onClose }: { onClose: () => void }) {
                         <SelectValue placeholder="Select a role" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="Admin">Admin</SelectItem>
-                        <SelectItem value="Staff">Staff</SelectItem>
+                        <SelectItem value="ADMIN">Admin</SelectItem>
+                        <SelectItem value="STAFF">Staff</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
