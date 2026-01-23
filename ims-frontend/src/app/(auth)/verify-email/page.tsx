@@ -8,7 +8,7 @@ function VerifyEmailWrapper() {
 
 export default function VerifyEmail() {
     return (
-        <main className="h-screen w-full flex">
+        <main className="min-h-screen w-full flex overflow-x-hidden">
             {/*left image*/}
             <div className="flex-1 hidden md:block">
                 <Image

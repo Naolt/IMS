@@ -3,7 +3,7 @@ import SignInForm from "./_components/SignInForm";
 
 export default function SignIn() {
   return (
-    <main className="h-screen w-full flex">
+    <main className="min-h-screen w-full flex overflow-x-hidden">
       {/*left image*/}
       <div className="flex-1 hidden md:block">
         <Image
@@ -16,7 +16,7 @@ export default function SignIn() {
           priority
         />
       </div>
-		
+
       {/*Sign in form*/}
 	  <div className="flex-1 flex items-center justify-center p-4">
       <SignInForm />
