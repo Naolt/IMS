@@ -158,6 +158,59 @@ export const verifyEmail = asyncHandler(async (req: Request, res: Response): Pro
     sendSuccess(res, 'Email verified successfully', undefined, req.id);
 });
 
+// Resend verification email
+export const resendVerificationEmail = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.body;
+
+    if (!email) {
+        throw new ValidationError('Email is required');
+    }
+
+    // Find user
+    const user = await userRepository.findOne({ where: { email } });
+
+    if (!user) {
+        // Don't reveal if user exists - send success anyway for security
+        sendSuccess(
+            res,
+            'If an account with that email exists and is not verified, we sent a new verification link',
+            undefined,
+            req.id
+        );
+        return;
+    }
+
+    // Check if already verified
+    if (user.isVerified) {
+        sendSuccess(
+            res,
+            'Email is already verified. You can sign in.',
+            undefined,
+            req.id
+        );
+        return;
+    }
+
+    // Generate new verification token
+    const verificationToken = generateVerificationToken();
+    user.verificationToken = verificationToken;
+    await userRepository.save(user);
+
+    // Send verification email
+    try {
+        await sendVerificationEmail(email, verificationToken);
+    } catch (emailError) {
+        logger.error('Failed to send verification email:', emailError);
+    }
+
+    sendSuccess(
+        res,
+        'If an account with that email exists and is not verified, we sent a new verification link',
+        undefined,
+        req.id
+    );
+});
+
 // Forgot password
 export const forgotPassword = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { email } = req.body;

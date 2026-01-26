@@ -3,6 +3,7 @@ import {
     signup,
     signin,
     verifyEmail,
+    resendVerificationEmail,
     forgotPassword,
     resetPassword,
     getProfile,
@@ -136,6 +137,31 @@ router.post('/signin', signin);
  *         description: Invalid or expired token
  */
 router.post('/verify-email', verifyEmail);
+
+/**
+ * @swagger
+ * /api/auth/resend-verification:
+ *   post:
+ *     summary: Resend verification email
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: user@example.com
+ *     responses:
+ *       200:
+ *         description: Verification email sent if account exists and is not verified
+ */
+router.post('/resend-verification', resendVerificationEmail);
 
 /**
  * @swagger

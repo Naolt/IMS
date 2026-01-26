@@ -7,6 +7,7 @@ import * as z from 'zod';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/auth-context';
 import { toast } from 'sonner';
+import { authApi } from '@/services/api';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -31,13 +32,17 @@ type SignInFormData = z.infer<typeof signInSchema>;
 
 export default function SignInForm() {
     const [isLoading, setIsLoading] = React.useState(false);
+    const [isResending, setIsResending] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
+    const [showResendOption, setShowResendOption] = React.useState(false);
+    const [lastEmail, setLastEmail] = React.useState<string>('');
     const { signIn } = useAuth();
 
     const {
         register,
         handleSubmit,
-        formState: { errors }
+        formState: { errors },
+        getValues
     } = useForm<SignInFormData>({
         resolver: zodResolver(signInSchema)
     });
@@ -45,6 +50,7 @@ export default function SignInForm() {
     const onSubmit = async (data: SignInFormData) => {
         setIsLoading(true);
         setError(null);
+        setShowResendOption(false);
 
         try {
             await signIn(data);
@@ -53,8 +59,34 @@ export default function SignInForm() {
             const errorMessage = err instanceof Error ? err.message : 'Failed to sign in';
             setError(errorMessage);
             toast.error(errorMessage);
+
+            // Check if error is about email not verified
+            if (errorMessage.toLowerCase().includes('not verified') ||
+                errorMessage.toLowerCase().includes('verify your email')) {
+                setShowResendOption(true);
+                setLastEmail(data.email);
+            }
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleResendVerification = async () => {
+        const email = lastEmail || getValues('email');
+        if (!email) {
+            toast.error('Please enter your email address');
+            return;
+        }
+
+        setIsResending(true);
+        try {
+            await authApi.resendVerificationEmail(email);
+            toast.success('Verification email sent! Please check your inbox.');
+            setShowResendOption(false);
+        } catch (err) {
+            toast.error('Failed to send verification email. Please try again.');
+        } finally {
+            setIsResending(false);
         }
     };
 
@@ -71,7 +103,20 @@ export default function SignInForm() {
                     {error && (
                         <Alert variant="destructive" className="mb-4">
                             <AlertCircle className="h-4 w-4" />
-                            <AlertDescription>{error}</AlertDescription>
+                            <AlertDescription>
+                                <span>{error}</span>
+                                {showResendOption && (
+                                    <Button
+                                        type="button"
+                                        variant="link"
+                                        className="p-0 h-auto ml-1 text-destructive-foreground underline"
+                                        onClick={handleResendVerification}
+                                        disabled={isResending}
+                                    >
+                                        {isResending ? 'Sending...' : 'Resend verification email'}
+                                    </Button>
+                                )}
+                            </AlertDescription>
                         </Alert>
                     )}
                     <div className="grid w-full items-center gap-4">

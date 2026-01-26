@@ -92,6 +92,14 @@ export const authApi = {
         );
         return response.data;
     },
+
+    resendVerificationEmail: async (email: string) => {
+        const response = await apiClient.post<ApiResponse>(
+            '/api/auth/resend-verification',
+            { email }
+        );
+        return response.data;
+    },
 };
 
 // ========== PRODUCTS API ==========
