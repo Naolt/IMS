@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/auth-context';
 import { toast } from 'sonner';
 import { authApi } from '@/services/api';
+import apiClient from '@/lib/api-client';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -21,7 +22,18 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { AlertCircle, Database, Loader2 } from 'lucide-react';
 
 const signInSchema = z.object({
     email: z.string().email('Invalid email address'),
@@ -33,19 +45,58 @@ type SignInFormData = z.infer<typeof signInSchema>;
 export default function SignInForm() {
     const [isLoading, setIsLoading] = React.useState(false);
     const [isResending, setIsResending] = React.useState(false);
+    const [isSeeding, setIsSeeding] = React.useState(false);
+    const [isCheckingDb, setIsCheckingDb] = React.useState(true);
+    const [needsSeed, setNeedsSeed] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
     const [showResendOption, setShowResendOption] = React.useState(false);
     const [lastEmail, setLastEmail] = React.useState<string>('');
+    const [seedResult, setSeedResult] = React.useState<{
+        admin: { email: string; password: string };
+        staff: { email: string; password: string };
+    } | null>(null);
     const { signIn } = useAuth();
 
     const {
         register,
         handleSubmit,
         formState: { errors },
-        getValues
+        getValues,
+        setValue
     } = useForm<SignInFormData>({
         resolver: zodResolver(signInSchema)
     });
+
+    // Check if database needs seeding on mount
+    React.useEffect(() => {
+        const checkDatabase = async () => {
+            try {
+                // Try a lightweight request to check if db has data
+                // We'll attempt to seed and check the response
+                const response = await apiClient.post('/api/seed');
+                // If we get here, the seed was successful - db was empty
+                if (response.data.success) {
+                    setSeedResult(response.data.data.credentials);
+                    setValue('email', response.data.data.credentials.admin.email);
+                    setValue('password', response.data.data.credentials.admin.password);
+                    toast.success('Database seeded automatically!');
+                }
+                setNeedsSeed(false);
+            } catch (err: any) {
+                // If 400, database is already seeded
+                if (err.response?.status === 400) {
+                    setNeedsSeed(false);
+                } else {
+                    // Other error - show seed button as fallback
+                    setNeedsSeed(true);
+                }
+            } finally {
+                setIsCheckingDb(false);
+            }
+        };
+
+        checkDatabase();
+    }, [setValue]);
 
     const onSubmit = async (data: SignInFormData) => {
         setIsLoading(true);
@@ -90,6 +141,30 @@ export default function SignInForm() {
         }
     };
 
+    const handleSeedDatabase = async () => {
+        setIsSeeding(true);
+        setSeedResult(null);
+        try {
+            const response = await apiClient.post('/api/seed');
+            if (response.data.success) {
+                toast.success('Database seeded successfully!');
+                setSeedResult(response.data.data.credentials);
+                setNeedsSeed(false);
+                // Pre-fill admin credentials
+                setValue('email', response.data.data.credentials.admin.email);
+                setValue('password', response.data.data.credentials.admin.password);
+            }
+        } catch (err: any) {
+            const message = err.response?.data?.message || 'Failed to seed database';
+            toast.error(message);
+            if (err.response?.status === 400) {
+                setNeedsSeed(false);
+            }
+        } finally {
+            setIsSeeding(false);
+        }
+    };
+
     return (
         <Card className="w-full max-w-[400px]">
             <CardHeader>
@@ -116,6 +191,16 @@ export default function SignInForm() {
                                         {isResending ? 'Sending...' : 'Resend verification email'}
                                     </Button>
                                 )}
+                            </AlertDescription>
+                        </Alert>
+                    )}
+                    {seedResult && (
+                        <Alert className="mb-4">
+                            <Database className="h-4 w-4" />
+                            <AlertDescription>
+                                <p className="font-medium mb-1">Database seeded! Use these credentials:</p>
+                                <p className="text-xs">Admin: {seedResult.admin.email} / {seedResult.admin.password}</p>
+                                <p className="text-xs">Staff: {seedResult.staff.email} / {seedResult.staff.password}</p>
                             </AlertDescription>
                         </Alert>
                     )}
@@ -161,7 +246,7 @@ export default function SignInForm() {
                     </div>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-4">
-                    <Button type="submit" className="w-full" disabled={isLoading}>
+                    <Button type="submit" className="w-full" disabled={isLoading || isCheckingDb}>
                         {isLoading ? 'Signing in...' : 'Login'}
                     </Button>
                     <p className="text-sm text-center text-muted-foreground">
@@ -173,6 +258,57 @@ export default function SignInForm() {
                             Sign up
                         </Link>
                     </p>
+
+                    {/* Seed Database Option - Only show if database needs seeding */}
+                    {needsSeed && !isCheckingDb && (
+                        <div className="w-full pt-4 border-t">
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        className="w-full"
+                                        disabled={isSeeding}
+                                    >
+                                        {isSeeding ? (
+                                            <>
+                                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                Seeding...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Database className="h-4 w-4 mr-2" />
+                                                Seed Demo Data
+                                            </>
+                                        )}
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Seed Database</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This will populate the database with sample data including:
+                                            <ul className="list-disc list-inside mt-2 space-y-1">
+                                                <li>Admin and Staff user accounts</li>
+                                                <li>Sample products with variants</li>
+                                                <li>Sample sales records</li>
+                                            </ul>
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={handleSeedDatabase}>
+                                            Seed Database
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                            <p className="text-xs text-center text-muted-foreground mt-2">
+                                For demo purposes - creates sample data
+                            </p>
+                        </div>
+                    )}
                 </CardFooter>
             </form>
         </Card>

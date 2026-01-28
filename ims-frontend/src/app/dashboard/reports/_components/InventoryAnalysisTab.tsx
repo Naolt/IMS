@@ -209,12 +209,12 @@ export default function InventoryAnalysisTab() {
             {/* Charts Row */}
             <div className="grid gap-6 md:grid-cols-2">
                 {/* Stock Status Distribution */}
-                <Card>
+                <Card className="overflow-hidden">
                     <CardHeader>
                         <CardTitle>Stock Status</CardTitle>
                         <CardDescription>Inventory health by stock levels</CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-2 sm:p-6">
                         <ChartContainer
                             config={{
                                 'In Stock': {
@@ -230,7 +230,7 @@ export default function InventoryAnalysisTab() {
                                     color: CHART_COLORS.outOfStock,
                                 },
                             }}
-                            className="h-[300px] w-full"
+                            className="h-[280px] sm:h-[300px] w-full mx-auto"
                         >
                             <PieChart>
                                 <ChartTooltip content={<ChartTooltipContent hideLabel />} />
@@ -239,9 +239,9 @@ export default function InventoryAnalysisTab() {
                                     dataKey="value"
                                     nameKey="status"
                                     cx="50%"
-                                    cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={100}
+                                    cy="45%"
+                                    innerRadius={50}
+                                    outerRadius={80}
                                     paddingAngle={2}
                                 >
                                     {inventoryStats.stockStatusData.map((entry, index) => (
@@ -255,31 +255,38 @@ export default function InventoryAnalysisTab() {
                 </Card>
 
                 {/* Inventory by Category */}
-                <Card>
+                <Card className="overflow-hidden">
                     <CardHeader>
                         <CardTitle>By Category</CardTitle>
                         <CardDescription>Stock distribution across categories</CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-2 sm:p-6">
                         {inventoryStats.categoryChartData.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-[300px]">
                                 <Boxes className="h-12 w-12 text-muted-foreground/50 mb-4" />
                                 <p className="text-muted-foreground">No category data available</p>
                             </div>
                         ) : (
-                            <ChartContainer config={chartConfig} className="h-[300px] w-full">
-                                <BarChart data={inventoryStats.categoryChartData}>
+                            <ChartContainer config={chartConfig} className="h-[280px] sm:h-[300px] w-full">
+                                <BarChart data={inventoryStats.categoryChartData} margin={{ left: -20, right: 10 }}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                     <XAxis
                                         dataKey="category"
                                         tickLine={false}
                                         axisLine={false}
                                         tickMargin={8}
+                                        fontSize={11}
+                                        angle={-45}
+                                        textAnchor="end"
+                                        height={60}
+                                        interval={0}
                                     />
                                     <YAxis
                                         tickLine={false}
                                         axisLine={false}
-                                        tickMargin={8}
+                                        tickMargin={4}
+                                        fontSize={11}
+                                        width={40}
                                     />
                                     <ChartTooltip content={<ChartTooltipContent />} />
                                     <Bar
@@ -300,7 +307,7 @@ export default function InventoryAnalysisTab() {
                     <CardTitle>Highest Value Inventory</CardTitle>
                     <CardDescription>Products with highest total retail value in stock</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-3 sm:p-6">
                     {inventoryStats.topValueProducts.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-12">
                             <Package className="h-12 w-12 text-muted-foreground/50 mb-4" />
@@ -311,27 +318,27 @@ export default function InventoryAnalysisTab() {
                             {inventoryStats.topValueProducts.map((product, index) => (
                                 <div
                                     key={index}
-                                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 border rounded-lg hover:bg-muted/50 transition-colors gap-3"
                                 >
-                                    <div className="flex items-center gap-4">
-                                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold text-sm">
+                                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                                        <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 text-primary font-semibold text-sm shrink-0">
                                             {index + 1}
                                         </div>
-                                        <div>
-                                            <div className="font-medium">{product.name}</div>
-                                            <div className="text-sm text-muted-foreground">
+                                        <div className="min-w-0">
+                                            <div className="font-medium text-sm sm:text-base truncate">{product.name}</div>
+                                            <div className="text-xs sm:text-sm text-muted-foreground">
                                                 Code: {product.code}
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex gap-8 items-center">
+                                    <div className="flex gap-4 sm:gap-8 items-center justify-end sm:justify-start pl-10 sm:pl-0">
                                         <div className="text-right">
-                                            <div className="text-sm text-muted-foreground">Quantity</div>
-                                            <div className="font-semibold">{product.quantity}</div>
+                                            <div className="text-xs sm:text-sm text-muted-foreground">Qty</div>
+                                            <div className="font-semibold text-sm sm:text-base">{product.quantity}</div>
                                         </div>
-                                        <div className="text-right min-w-[100px]">
-                                            <div className="text-sm text-muted-foreground">Value</div>
-                                            <div className="font-semibold">
+                                        <div className="text-right">
+                                            <div className="text-xs sm:text-sm text-muted-foreground">Value</div>
+                                            <div className="font-semibold text-sm sm:text-base">
                                                 {formatCurrency(product.value)}
                                             </div>
                                         </div>

@@ -197,40 +197,44 @@ export default function AddInventoryForm() {
                 <Separator className="col-span-3" />
 
                 {/* Variants */}
-                <FormField
-                    control={form.control}
-                    name="variants"
-                    render={() => (
-                        <FormItem className="col-span-3">
-                            <FormLabel>Variants</FormLabel>
-                            <FormControl>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {fields.map((field, index) => (
-                                        <Variant
-                                            control={form.control}
-                                            key={field.id} // Use unique field ID provided by RHF
-                                            index={index}
-                                            onRemove={() => remove(index)} // Pass remove handler
-                                        />
-                                    ))}
-                                    <AddVariantButton
-                                        onClick={() =>
-                                            append({
-                                                size: '',
-                                                color: '',
-                                                stockQuantity: 0,
-                                                minStockQuantity: 0,
-                                                buyingPrice: 0,
-                                                sellingPrice: 0
-                                            })
-                                        }
-                                    />
-                                </div>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
+                <div className="col-span-3">
+                    <FormLabel className={form.formState.errors.variants ? 'text-destructive' : ''}>
+                        Variants
+                    </FormLabel>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
+                        {fields.map((field, index) => (
+                            <Variant
+                                control={form.control}
+                                key={field.id} // Use unique field ID provided by RHF
+                                index={index}
+                                onRemove={() => remove(index)} // Pass remove handler
+                                canDelete={fields.length > 1}
+                            />
+                        ))}
+                        <AddVariantButton
+                            onClick={() =>
+                                append({
+                                    size: '',
+                                    color: '',
+                                    stockQuantity: 0,
+                                    minStockQuantity: 0,
+                                    buyingPrice: 0,
+                                    sellingPrice: 0
+                                })
+                            }
+                        />
+                    </div>
+                    {form.formState.errors.variants?.message && (
+                        <p className="text-sm font-medium text-destructive mt-2">
+                            {form.formState.errors.variants.message}
+                        </p>
                     )}
-                />
+                    {form.formState.errors.variants?.root?.message && (
+                        <p className="text-sm font-medium text-destructive mt-2">
+                            {form.formState.errors.variants.root.message}
+                        </p>
+                    )}
+                </div>
 
                 <div className="col-span-3 w-full flex justify-end gap-4">
                     <Button
@@ -253,11 +257,13 @@ export default function AddInventoryForm() {
 function Variant({
     control,
     index,
-    onRemove
+    onRemove,
+    canDelete = true
 }: {
     control: Control<z.infer<typeof productSchema>>;
     index: number;
     onRemove: () => void;
+    canDelete?: boolean;
 }) {
     const { data: sizesResponse } = useSizes();
     const { data: colorsResponse } = useColors();
@@ -393,8 +399,10 @@ function Variant({
                     type="button"
                     size={'icon'}
                     variant={'ghost'}
-                    className="text-red-500"
+                    className="text-red-500 disabled:text-muted-foreground"
                     onClick={onRemove}
+                    disabled={!canDelete}
+                    title={canDelete ? 'Delete variant' : 'At least one variant is required'}
                 >
                     <Trash />
                 </Button>

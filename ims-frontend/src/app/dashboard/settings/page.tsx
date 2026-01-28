@@ -142,21 +142,21 @@ export default function SettingsPage() {
     };
 
     return (
-        <div className="h-full flex flex-col gap-6 p-8">
+        <div className="h-full flex flex-col gap-4 sm:gap-6">
             {/* Header */}
             <div className="flex items-center gap-3">
                 <div className="p-2 bg-primary/10 rounded-lg">
                     <SettingsIcon className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold">Settings</h1>
-                    <p className="text-sm text-muted-foreground">
+                    <h1 className="text-xl sm:text-2xl font-bold">Settings</h1>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                         Configure your boutique settings
                     </p>
                 </div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {/* Boutique Name */}
                 <Card>
                     <CardHeader>

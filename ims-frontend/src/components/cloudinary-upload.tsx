@@ -62,6 +62,7 @@ export default function CloudinaryUpload({
                                     onChange(result.info.secure_url);
                                 }
                             }}
+                            onClose={() => setIsUploading(false)}
                             onQueuesEnd={() => setIsUploading(false)}
                         >
                             {({ open }) => (
@@ -109,6 +110,7 @@ export default function CloudinaryUpload({
                             onChange(result.info.secure_url);
                         }
                     }}
+                    onClose={() => setIsUploading(false)}
                     onQueuesEnd={() => setIsUploading(false)}
                 >
                     {({ open }) => (

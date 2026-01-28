@@ -50,9 +50,18 @@ export default function AIAssistantPage() {
     const [savedThreads, setSavedThreads] = useState<SavedThread[]>([]);
     const [isHistoryOpen, setIsHistoryOpen] = useState(false);
     const [threadToDelete, setThreadToDelete] = useState<string | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const { mutate: sendMessage, isPending } = useAIChat();
+
+    // Detect mobile for bottom sheet
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 640);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     // Fetch chat history
     const { refetch } = useChatMessages(threadId, !!threadId);
@@ -230,15 +239,15 @@ export default function AIAssistantPage() {
     ];
 
     return (
-        <div className="h-[calc(100vh-4rem)] flex flex-col p-4 md:p-8">
-            {/* Header - Compact */}
-            <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4 flex-shrink-0">
+        <div className="h-[calc(100vh-4rem)] flex flex-col p-0 md:p-8">
+            {/* Header - Hidden on mobile */}
+            <div className="hidden md:flex items-center gap-3 mb-4 flex-shrink-0">
                 <div className="p-2 bg-primary/10 rounded-lg">
-                    <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+                    <Sparkles className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                    <h1 className="text-xl md:text-2xl font-bold">AI Assistant</h1>
-                    <p className="text-xs md:text-sm text-muted-foreground">
+                    <h1 className="text-2xl font-bold">AI Assistant</h1>
+                    <p className="text-sm text-muted-foreground">
                         Ask me anything about your inventory
                     </p>
                 </div>
@@ -267,36 +276,41 @@ export default function AIAssistantPage() {
             </AlertDialog>
 
             {/* Chat Container */}
-            <Card className="flex-1 flex flex-col min-h-0">
-                <CardHeader className="border-b flex-shrink-0 p-3 md:p-6">
+            <Card className="flex-1 flex flex-col min-h-0 border-0 md:border shadow-none md:shadow-sm rounded-none md:rounded-lg">
+                {/* Header - Hidden on mobile */}
+                <CardHeader className="border-b flex-shrink-0 p-3 md:p-6 hidden md:block">
                     <div className="flex items-center justify-between">
-                        <CardTitle className="text-base md:text-lg">Chat</CardTitle>
-                        <div className="flex gap-1 md:gap-2">
+                        <CardTitle className="text-lg">Chat</CardTitle>
+                        <div className="flex gap-2">
                             <Sheet open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
                                 <SheetTrigger asChild>
                                     <Button variant="outline" size="sm">
-                                        <History className="h-4 w-4 md:mr-2" />
-                                        <span className="hidden md:inline">History</span>
+                                        <History className="h-4 w-4 mr-2" />
+                                        <span>History</span>
                                     </Button>
                                 </SheetTrigger>
-                                <SheetContent>
+                                <SheetContent
+                                        side={isMobile ? 'bottom' : 'right'}
+                                        className={isMobile ? 'h-[85vh] rounded-t-xl' : 'w-[80vw] max-w-[400px] p-4 sm:p-6'}
+                                    >
                                     <SheetHeader>
                                         <SheetTitle>Conversation History</SheetTitle>
-                                        <SheetDescription>
+                                        <SheetDescription className="hidden sm:block">
                                             Switch between your previous conversations
                                         </SheetDescription>
                                     </SheetHeader>
-                                    <div className="mt-6">
+                                    <div className="mt-4 sm:mt-6">
                                         <Button
                                             onClick={handleNewConversation}
                                             className="w-full mb-4"
                                             variant="default"
+                                            size="sm"
                                         >
                                             <Plus className="h-4 w-4 mr-2" />
                                             New Conversation
                                         </Button>
-                                        <ScrollArea className="h-[calc(100vh-200px)]">
-                                            <div className="space-y-2">
+                                        <ScrollArea className={isMobile ? 'h-[calc(85vh-140px)]' : 'h-[calc(100vh-180px)]'}>
+                                            <div className="space-y-2 ">
                                                 {savedThreads.length === 0 ? (
                                                     <p className="text-sm text-muted-foreground text-center py-8">
                                                         No conversation history yet
@@ -305,37 +319,32 @@ export default function AIAssistantPage() {
                                                     savedThreads.map((thread) => (
                                                         <div
                                                             key={thread.id}
-                                                            className={`p-3 rounded-lg border cursor-pointer hover:bg-accent transition-colors ${
+                                                            className={`p-2 sm:p-3 rounded-lg border cursor-pointer hover:bg-accent transition-colors w-full ${
                                                                 thread.id === threadId
                                                                     ? 'bg-accent border-primary'
                                                                     : ''
                                                             }`}
+                                                            onClick={() => handleSwitchThread(thread.id)}
                                                         >
-                                                            <div className="flex items-start justify-between gap-2">
-                                                                <div
-                                                                    className="flex-1 min-w-0"
-                                                                    onClick={() => handleSwitchThread(thread.id)}
-                                                                >
-                                                                    <div className="flex items-start gap-2">
-                                                                        <MessageSquare className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                                                                        <div className="flex-1 min-w-0">
-                                                                            <p className="text-sm font-medium truncate">
-                                                                                {thread.title}
-                                                                            </p>
-                                                                            <p className="text-xs text-muted-foreground">
-                                                                                {thread.timestamp.toLocaleDateString()}{' '}
-                                                                                {thread.timestamp.toLocaleTimeString([], {
-                                                                                    hour: '2-digit',
-                                                                                    minute: '2-digit',
-                                                                                })}
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <MessageSquare className="h-4 w-4 shrink-0" />
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-sm font-medium">
+                                                                        {thread.title}
+                                                                    </span>
+                                                                    <span className="text-xs text-muted-foreground">
+                                                                        {thread.timestamp.toLocaleDateString()}{' '}
+                                                                        {thread.timestamp.toLocaleTimeString([], {
+                                                                            hour: '2-digit',
+                                                                            minute: '2-digit',
+                                                                        })}
+                                                                    </span>
                                                                 </div>
+                                                                <div className="flex-1" />
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="icon"
-                                                                    className="h-6 w-6 flex-shrink-0"
+                                                                    className="h-6 w-6 shrink-0"
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
                                                                         setThreadToDelete(thread.id);
@@ -353,12 +362,28 @@ export default function AIAssistantPage() {
                                 </SheetContent>
                             </Sheet>
                             <Button variant="outline" size="sm" onClick={handleNewConversation}>
-                                <Plus className="h-4 w-4 md:mr-2" />
-                                <span className="hidden md:inline">New Chat</span>
+                                <Plus className="h-4 w-4 mr-2" />
+                                <span>New Chat</span>
                             </Button>
                         </div>
                     </div>
                 </CardHeader>
+
+                {/* Mobile header - just action buttons */}
+                <div className="md:hidden flex items-center justify-end gap-2 p-2 border-b flex-shrink-0">
+                    <Sheet open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
+                        <SheetTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <History className="h-4 w-4" />
+                            </Button>
+                        </SheetTrigger>
+                        {/* Sheet content is the same, defined above */}
+                    </Sheet>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleNewConversation}>
+                        <Plus className="h-4 w-4" />
+                    </Button>
+                </div>
+
                 <CardContent className="flex-1 flex flex-col p-0 min-h-0">
                     {/* Messages */}
                     <div className="flex-1 overflow-y-auto p-3 md:p-6 space-y-3 md:space-y-4 min-h-0">
@@ -422,11 +447,25 @@ export default function AIAssistantPage() {
                                             }`}
                                         >
                                             {message.role === 'user' ? (
-                                                <p className="whitespace-pre-wrap">
+                                                <p className="whitespace-pre-wrap text-sm">
                                                     {message.content}
                                                 </p>
                                             ) : (
-                                                <div className="prose prose-xs md:prose-sm dark:prose-invert max-w-none [&>*]:text-foreground [&>p]:text-sm [&>p]:md:text-base">
+                                                <div className="prose prose-sm dark:prose-invert max-w-none
+                                                    [&>*]:text-foreground
+                                                    [&>*]:text-sm
+                                                    [&>h1]:text-base [&>h1]:font-semibold [&>h1]:mt-3 [&>h1]:mb-2
+                                                    [&>h2]:text-sm [&>h2]:font-semibold [&>h2]:mt-3 [&>h2]:mb-2
+                                                    [&>h3]:text-sm [&>h3]:font-semibold [&>h3]:mt-2 [&>h3]:mb-1
+                                                    [&>p]:text-sm [&>p]:my-1.5
+                                                    [&>ul]:text-sm [&>ul]:my-1.5 [&>ul]:pl-4
+                                                    [&>ol]:text-sm [&>ol]:my-1.5 [&>ol]:pl-4
+                                                    [&>li]:text-sm [&>li]:my-0.5
+                                                    [&>pre]:text-xs [&>pre]:my-2
+                                                    [&>code]:text-xs
+                                                    [&>blockquote]:text-sm [&>blockquote]:my-2
+                                                    [&>table]:text-sm
+                                                ">
                                                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                                         {message.content}
                                                     </ReactMarkdown>
@@ -466,22 +505,22 @@ export default function AIAssistantPage() {
                     </div>
 
                     {/* Input */}
-                    <div className="border-t p-4 flex-shrink-0">
+                    <div className="border-t p-2 md:p-4 flex-shrink-0 bg-background">
                         <div className="flex gap-2 items-end">
                             <Textarea
-                                placeholder="Ask me anything about your inventory..."
+                                placeholder="Ask about your inventory..."
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={handleKeyDown}
                                 disabled={isPending || !threadId}
-                                className="flex-1 min-h-[44px] resize-none"
+                                className="flex-1 min-h-[40px] md:min-h-[44px] resize-none text-sm md:text-base"
                                 rows={1}
                             />
                             <Button
                                 onClick={handleSend}
                                 disabled={!input.trim() || isPending || !threadId}
                                 size="icon"
-                                className="h-11 w-11"
+                                className="h-10 w-10 md:h-11 md:w-11"
                             >
                                 {isPending ? (
                                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -490,7 +529,7 @@ export default function AIAssistantPage() {
                                 )}
                             </Button>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-2">
+                        <p className="text-xs text-muted-foreground mt-1 md:mt-2 hidden md:block">
                             Press Enter to send, Shift+Enter for new line
                         </p>
                     </div>

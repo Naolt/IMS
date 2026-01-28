@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSales, useSalesAnalytics } from '@/hooks/use-sales';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -80,22 +80,23 @@ export default function SalesCards() {
     );
 
     // Handle date range changes
-    useEffect(() => {
-        if (dateRange?.from && dateRange?.to) {
+    const handleDateRangeChange = useCallback((range: DateRange | undefined) => {
+        setDateRange(range);
+        if (range?.from && range?.to) {
             updateUrlParams({
-                startDate: dateRange.from.toISOString(),
-                endDate: dateRange.to.toISOString(),
+                startDate: range.from.toISOString(),
+                endDate: range.to.toISOString(),
                 page: 1,
             });
             setIsCalendarOpen(false);
-        } else if (!dateRange) {
+        } else if (!range) {
             updateUrlParams({
                 startDate: undefined,
                 endDate: undefined,
                 page: 1,
             });
         }
-    }, [dateRange, updateUrlParams]);
+    }, [updateUrlParams]);
 
     // Handlers
     const handleSearch = useCallback(() => {
@@ -111,8 +112,8 @@ export default function SalesCards() {
 
     const handleResetFilters = useCallback(() => {
         setSearchInput('');
-        setDateRange(undefined);
-    }, []);
+        handleDateRangeChange(undefined);
+    }, [handleDateRangeChange]);
 
     // Transform sales data
     const salesData = useMemo(() => {
@@ -288,7 +289,7 @@ export default function SalesCards() {
                                 <Calendar
                                     mode="range"
                                     selected={dateRange}
-                                    onSelect={setDateRange}
+                                    onSelect={handleDateRangeChange}
                                     numberOfMonths={2}
                                     disabled={(date) =>
                                         date > new Date() || date < new Date('2000-01-01')
@@ -406,8 +407,8 @@ export default function SalesCards() {
             {pagination && pagination.totalPages > 1 && (
                 <Card>
                     <CardContent className="pt-6">
-                        <div className="flex items-center justify-between">
-                            <p className="text-sm text-muted-foreground">
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <p className="text-sm text-muted-foreground text-center sm:text-left">
                                 Showing {(page - 1) * limit + 1} to{' '}
                                 {Math.min(page * limit, pagination.total)} of{' '}
                                 {pagination.total} sales
@@ -419,10 +420,10 @@ export default function SalesCards() {
                                     onClick={() => handlePageChange(page - 1)}
                                     disabled={page === 1}
                                 >
-                                    <ChevronLeft className="h-4 w-4 mr-1" />
-                                    Previous
+                                    <ChevronLeft className="h-4 w-4" />
+                                    <span className="hidden sm:inline ml-1">Previous</span>
                                 </Button>
-                                <div className="flex items-center gap-1">
+                                <div className="hidden sm:flex items-center gap-1">
                                     {Array.from(
                                         { length: pagination.totalPages },
                                         (_, i) => i + 1
@@ -450,14 +451,17 @@ export default function SalesCards() {
                                             </div>
                                         ))}
                                 </div>
+                                <span className="sm:hidden text-sm font-medium">
+                                    {page} / {pagination.totalPages}
+                                </span>
                                 <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={() => handlePageChange(page + 1)}
                                     disabled={page === pagination.totalPages}
                                 >
-                                    Next
-                                    <ChevronRight className="h-4 w-4 ml-1" />
+                                    <span className="hidden sm:inline mr-1">Next</span>
+                                    <ChevronRight className="h-4 w-4" />
                                 </Button>
                             </div>
                         </div>

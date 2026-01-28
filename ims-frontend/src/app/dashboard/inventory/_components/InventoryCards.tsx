@@ -247,7 +247,7 @@ export default function InventoryCards() {
                     </CardContent>
                 </Card>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {inventoryItems.map((item) => (
                         <ProductCard
                             key={item.id}
@@ -367,9 +367,20 @@ function ProductCard({ item, getStockBadgeVariant }: ProductCardProps) {
         });
     };
 
+    const handleCardClick = (e: React.MouseEvent) => {
+        // Don't open modal if clicking on dropdown or its children
+        if ((e.target as HTMLElement).closest('[data-dropdown-trigger]')) {
+            return;
+        }
+        setShowViewDialog(true);
+    };
+
     return (
         <>
-            <Card className="overflow-hidden hover:shadow-lg transition-shadow relative">
+            <Card
+                className="overflow-hidden hover:shadow-lg hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer relative max-w-sm"
+                onClick={handleCardClick}
+            >
                 <CardHeader className="p-0">
                     <div className="aspect-square bg-muted relative">
                         {item.imageUrl ? (
@@ -391,25 +402,29 @@ function ProductCard({ item, getStockBadgeVariant }: ProductCardProps) {
                         </Badge>
 
                         {/* Action Menu */}
-                        <div className="absolute top-2 right-2">
+                        <div className="absolute top-2 right-2" data-dropdown-trigger>
                             <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                                 <DropdownMenuTrigger asChild>
                                     <Button
                                         variant="secondary"
                                         size="icon"
                                         className="h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background shadow-sm"
+                                        onClick={(e) => e.stopPropagation()}
                                     >
                                         <MoreVertical className="h-4 w-4" />
                                         <span className="sr-only">Open menu</span>
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-48">
+                                <DropdownMenuContent align="end" className="w-48" onClick={(e) => e.stopPropagation()}>
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                     <DropdownMenuItem onClick={handleView}>
                                         <Eye className="mr-2 h-4 w-4" />
                                         View Details
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={handleEdit}>
+                                    <DropdownMenuItem onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEdit();
+                                    }}>
                                         <Edit className="mr-2 h-4 w-4" />
                                         Edit Product
                                     </DropdownMenuItem>
@@ -589,11 +604,57 @@ function ProductDetailsDialog({ productId, open, onOpenChange }: ProductDetailsD
                             </div>
                         </div>
 
-                        {/* Variants Table */}
+                        {/* Variants - Card layout for mobile, Table for desktop */}
                         <div>
                             <h4 className="font-semibold mb-3">Variants</h4>
-                            <div className="border rounded-lg overflow-x-auto">
-                                <table className="w-full min-w-[600px]">
+
+                            {/* Mobile Card Layout */}
+                            <div className="md:hidden space-y-3">
+                                {product.variants?.map((variant: any) => {
+                                    const stockStatus =
+                                        variant.stockQuantity === 0
+                                            ? 'Out of Stock'
+                                            : variant.stockQuantity <= variant.minStockQuantity
+                                            ? 'Low Stock'
+                                            : 'In Stock';
+
+                                    const statusVariant =
+                                        stockStatus === 'Out of Stock'
+                                            ? 'destructive'
+                                            : stockStatus === 'Low Stock'
+                                            ? 'warning'
+                                            : 'default';
+
+                                    return (
+                                        <div key={variant.id} className="border rounded-lg p-3 space-y-2">
+                                            <div className="flex justify-between items-center">
+                                                <span className="font-medium">{variant.size} / {variant.color}</span>
+                                                <Badge variant={statusVariant} className="text-xs">
+                                                    {stockStatus}
+                                                </Badge>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                                <div>
+                                                    <span className="text-muted-foreground">Stock: </span>
+                                                    <span>{variant.stockQuantity} / {variant.minStockQuantity}</span>
+                                                </div>
+                                                <div>
+                                                    <span className="text-muted-foreground">Buy: </span>
+                                                    <span>{formatCurrency(variant.buyingPrice)}</span>
+                                                </div>
+                                                <div className="col-span-2">
+                                                    <span className="text-muted-foreground">Sell: </span>
+                                                    <span className="font-medium">{formatCurrency(variant.sellingPrice)}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Desktop Table Layout */}
+                            <div className="hidden md:block border rounded-lg overflow-x-auto">
+                                <table className="w-full">
                                     <thead className="bg-muted">
                                         <tr>
                                             <th className="text-left p-3 text-sm font-medium">Size</th>

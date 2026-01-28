@@ -32,5 +32,21 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         return null;
     }
 
-    return <>{children}</>;
+    return (
+        <main className="relative min-h-screen w-full flex items-center justify-center p-4 overflow-hidden">
+            {/* Background Image */}
+            <div
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                style={{ backgroundImage: 'url(/background-auth.webp)' }}
+            />
+
+            {/* Overlay for better readability */}
+            <div className="absolute inset-0 bg-background/85 backdrop-blur-[2px]" />
+
+            {/* Content */}
+            <div className="relative z-10 w-full max-w-md">
+                {children}
+            </div>
+        </main>
+    );
 }

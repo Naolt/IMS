@@ -1,10 +1,12 @@
 import EditInventoryForm from './_components/EditInventoryForm';
 
-export default function EditProductPage({
+export default async function EditProductPage({
     params
 }: {
-    params: { id: string };
+    params: Promise<{ id: string }>;
 }) {
+    const { id } = await params;
+
     return (
         <div className="flex flex-col gap-6">
             <div>
@@ -13,7 +15,7 @@ export default function EditProductPage({
                     Update product information and variants
                 </p>
             </div>
-            <EditInventoryForm productId={params.id} />
+            <EditInventoryForm productId={id} />
         </div>
     );
 }

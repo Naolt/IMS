@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { columns } from './columns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatCurrency, formatDate, formatDateShort } from '@/lib/utils';
 import { BasicTable } from '@/components/basic-table';
 import { useSales } from '@/hooks/use-sales';
 import { Loader2 } from 'lucide-react';
@@ -20,6 +20,7 @@ export default function SalesTable() {
 
             return {
                 date: formatDate(sale.saleDate),
+                shortDate: formatDateShort(sale.saleDate),
                 product: sale.variant?.product?.name || 'Unknown',
                 variant: sale.variant ? `${sale.variant.size}/${sale.variant.color}` : 'N/A',
                 quantity: sale.quantity,

@@ -6,16 +6,16 @@ import InventoryAnalysisTab from './_components/InventoryAnalysisTab';
 
 export default function ReportsPage() {
     return (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4 sm:gap-6">
             <div>
-                <h1 className="text-3xl font-bold">Reports & Analytics</h1>
-                <p className="text-muted-foreground">
+                <h1 className="text-2xl sm:text-3xl font-bold">Reports & Analytics</h1>
+                <p className="text-sm sm:text-base text-muted-foreground">
                     Comprehensive business insights and performance analytics
                 </p>
             </div>
 
             <Tabs defaultValue="sales" className="w-full">
-                <TabsList className="grid w-full max-w-[400px] grid-cols-2">
+                <TabsList className="grid w-full max-w-full sm:max-w-[400px] grid-cols-2">
                     <TabsTrigger value="sales">Sales Analysis</TabsTrigger>
                     <TabsTrigger value="inventory">Inventory Analysis</TabsTrigger>
                 </TabsList>

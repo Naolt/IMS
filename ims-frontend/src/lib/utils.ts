@@ -21,6 +21,10 @@ export function formatDate(date: string) {
     return format(date, 'MMM do, yyyy');
 }
 
+export function formatDateShort(date: string) {
+    return format(date, 'MMM d');
+}
+
 export const calculateStockStatus = (
     stockQuantity: number,
     minStockQuantity: number

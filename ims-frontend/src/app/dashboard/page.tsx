@@ -52,17 +52,17 @@ export default function Dashboard() {
                     <StatCard key={card.title} {...card} />
                 ))}
             </div>
-            <div className="col-span-4 order-1 md:col-span-3">
+            <div className="col-span-4 order-1 lg:col-span-3">
                 <SalesTrendChart />
             </div>
-            <div className="col-span-4 order-1 sm:col-span-2 md:col-span-1">
+            <div className="col-span-4 order-1 sm:col-span-2 lg:col-span-1">
                 <TopSellingProducts />
             </div>
 
-            <div className="col-span-4 order-2 md:col-span-3 md:order-1">
+            <div className="col-span-4 order-2 lg:col-span-3 lg:order-1">
                 <SalesTable />
             </div>
-            <div className="col-span-4 order-1 sm:col-span-2 md:col-span-1">
+            <div className="col-span-4 order-1 sm:col-span-2 lg:col-span-1">
                 <LowStockAlerts />
             </div>
         </div>

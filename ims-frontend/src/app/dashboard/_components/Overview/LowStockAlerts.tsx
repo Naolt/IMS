@@ -57,10 +57,10 @@ function ProductCard({
     };
 }) {
     return (
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center gap-2">
             <h3 className="text-sm">{product.name}</h3>
-            <p className="text-xs text-muted-foreground">
-                {product.itemsLeft} Left
+            <p className="text-xs text-muted-foreground text-right shrink-0">
+                {product.itemsLeft} left
             </p>
         </div>
     );

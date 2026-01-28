@@ -1,9 +1,7 @@
 'use client';
 import {
-    Calendar,
     Home,
     Inbox,
-    Search,
     Settings,
     User,
     BarChart3,
@@ -22,13 +20,11 @@ import {
     SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
-    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem
 } from '@/components/ui/sidebar';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -40,7 +36,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Logo from './Logo';
 import { usePathname, useRouter } from 'next/navigation';
-import { useProfile } from '@/hooks/use-profile';
+import { useAuth } from '@/contexts/auth-context';
 import { UserRole } from '@/types/api';
 
 // Menu items.
@@ -87,7 +83,7 @@ const items = [
 export default function AppSidebar() {
     const path = usePathname();
     const router = useRouter();
-    const { data: user, isLoading } = useProfile();
+    const { user, isLoading, signOut } = useAuth();
 
     const isActive = (url: string) => {
         if (url === '/dashboard') {
@@ -97,10 +93,7 @@ export default function AppSidebar() {
     };
 
     const handleLogout = () => {
-        // Clear auth tokens from localStorage
-        localStorage.removeItem('token');
-        // Redirect to login
-        router.push('/');
+        signOut();
     };
 
     const handleProfile = () => {
@@ -120,7 +113,7 @@ export default function AppSidebar() {
                                 .filter(
                                     (item) =>
                                         !item.adminOnly ||
-                                        user?.data?.role === UserRole.ADMIN
+                                        user?.role === UserRole.ADMIN
                                 )
                                 .map((item) => (
                                     <SidebarMenuItem key={item.title}>
@@ -160,10 +153,10 @@ export default function AppSidebar() {
                                         </div>
                                         <div className="flex flex-col items-start text-left">
                                             <span className="text-sm font-medium">
-                                                {user?.data?.name || 'User'}
+                                                {user?.name || 'User'}
                                             </span>
                                             <span className="text-xs text-muted-foreground">
-                                                {user?.data?.email || ''}
+                                                {user?.email || ''}
                                             </span>
                                         </div>
                                     </div>
@@ -186,7 +179,7 @@ export default function AppSidebar() {
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                             onClick={handleLogout}
-                            className="text-red-600 focus:text-red-600"
+                            className="text-destructive focus:text-destructive focus:bg-destructive/10"
                         >
                             <LogOut className="mr-2 h-4 w-4" />
                             Logout
