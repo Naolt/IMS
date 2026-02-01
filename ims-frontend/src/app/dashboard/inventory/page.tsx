@@ -7,10 +7,10 @@ export default function InventoryPage() {
     return (
         <div className="flex flex-col gap-8">
             {/* Top section */}
-            <div className="flex justify-between items-center">
-                <h1 className="font-semibold">Inventory Management</h1>
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                <h1 className="font-semibold text-lg sm:text-xl">Inventory Management</h1>
                 <Link href={'/dashboard/inventory/add'}>
-                    <Button>Add New Product</Button>
+                    <Button size="sm" className="w-full sm:w-auto">Add New Product</Button>
                 </Link>
             </div>
 
