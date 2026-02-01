@@ -451,20 +451,23 @@ export default function AIAssistantPage() {
                                                     {message.content}
                                                 </p>
                                             ) : (
-                                                <div className="prose prose-sm dark:prose-invert max-w-none
-                                                    [&>*]:text-foreground
-                                                    [&>*]:text-sm
-                                                    [&>h1]:text-base [&>h1]:font-semibold [&>h1]:mt-3 [&>h1]:mb-2
-                                                    [&>h2]:text-sm [&>h2]:font-semibold [&>h2]:mt-3 [&>h2]:mb-2
-                                                    [&>h3]:text-sm [&>h3]:font-semibold [&>h3]:mt-2 [&>h3]:mb-1
-                                                    [&>p]:text-sm [&>p]:my-1.5
-                                                    [&>ul]:text-sm [&>ul]:my-1.5 [&>ul]:pl-4
-                                                    [&>ol]:text-sm [&>ol]:my-1.5 [&>ol]:pl-4
-                                                    [&>li]:text-sm [&>li]:my-0.5
-                                                    [&>pre]:text-xs [&>pre]:my-2
-                                                    [&>code]:text-xs
-                                                    [&>blockquote]:text-sm [&>blockquote]:my-2
-                                                    [&>table]:text-sm
+                                                <div className="prose prose-sm max-w-none
+                                                    text-foreground
+                                                    [&_*]:text-foreground
+                                                    [&_a]:text-primary [&_a]:underline
+                                                    [&_strong]:text-foreground [&_strong]:font-semibold
+                                                    [&_code]:text-foreground [&_code]:bg-muted [&_code]:px-1 [&_code]:rounded
+                                                    [&_h1]:text-base [&_h1]:font-semibold [&_h1]:mt-3 [&_h1]:mb-2
+                                                    [&_h2]:text-sm [&_h2]:font-semibold [&_h2]:mt-3 [&_h2]:mb-2
+                                                    [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:mt-2 [&_h3]:mb-1
+                                                    [&_p]:text-sm [&_p]:my-1.5
+                                                    [&_ul]:text-sm [&_ul]:my-1.5 [&_ul]:pl-4
+                                                    [&_ol]:text-sm [&_ol]:my-1.5 [&_ol]:pl-4
+                                                    [&_li]:text-sm [&_li]:my-0.5
+                                                    [&_pre]:text-xs [&_pre]:my-2 [&_pre]:bg-muted [&_pre]:p-2 [&_pre]:rounded
+                                                    [&_blockquote]:text-sm [&_blockquote]:my-2 [&_blockquote]:border-l-2 [&_blockquote]:pl-3 [&_blockquote]:border-muted-foreground
+                                                    [&_table]:text-sm
+                                                    [&_th]:text-foreground [&_td]:text-foreground
                                                 ">
                                                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                                         {message.content}
