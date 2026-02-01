@@ -1,36 +1,169 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# IMS - Inventory Management System
 
-## Getting Started
+A full-stack inventory management system built with Next.js and Express, featuring AI-powered insights, real-time analytics, and a modern responsive UI.
 
-First, run the development server:
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
+![Express](https://img.shields.io/badge/Express-5-000000?logo=express)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql)
 
+## Features
+
+### Inventory Management
+- Product catalog with variants (sizes, colors)
+- Stock level tracking and low-stock alerts
+- Category and brand organization
+- Image upload via Cloudinary
+
+### Sales Tracking
+- Record and manage sales transactions
+- Sales history with filtering and search
+- Revenue analytics and trends
+- Top-selling products insights
+
+### AI Assistant
+- Natural language queries about inventory and sales
+- Powered by Google Gemini via LangChain/LangGraph
+- Conversation history with memory
+- Actionable business insights
+
+### Reports & Analytics
+- Sales trend visualization
+- Inventory value analysis
+- Stock status breakdown
+- Category-wise distribution
+
+### User Management
+- Role-based access (Admin/Staff)
+- Email verification
+- Password reset flow
+- Profile management
+
+## Tech Stack
+
+### Frontend
+- **Framework:** Next.js 16 with App Router
+- **Styling:** Tailwind CSS
+- **Components:** shadcn/ui (Radix UI)
+- **State:** React Query (TanStack Query)
+- **Forms:** React Hook Form + Zod
+- **Charts:** Recharts
+
+### Backend
+- **Runtime:** Node.js with Express 5
+- **Database:** PostgreSQL with TypeORM
+- **AI:** LangChain + LangGraph + Google Gemini
+- **Auth:** JWT with refresh tokens
+- **Email:** Resend
+- **Docs:** Swagger/OpenAPI
+
+## Quick Start
+
+### Prerequisites
+- Node.js 18+
+- PostgreSQL database
+- Cloudinary account (for image uploads)
+- Google AI API key (for AI features)
+- Resend API key (for emails)
+
+### Environment Setup
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/Naolt/IMS.git
+cd IMS
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Set up the backend:
+```bash
+cd ims-backend
+cp .env.example .env
+# Edit .env with your configuration
+npm install
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up the frontend:
+```bash
+cd ims-frontend
+cp .env.example .env.local
+# Edit .env.local with your configuration
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Access the application:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:4000/api
+- API Docs: http://localhost:4000/api-docs
 
-## Learn More
+### Demo Credentials
 
-To learn more about Next.js, take a look at the following resources:
+The application can be seeded with demo data from the login page:
+- **Admin:** admin@ims.com / Admin@123
+- **Staff:** staff@ims.com / Staff@123
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+ims/
+├── ims-frontend/          # Next.js frontend application
+│   ├── src/
+│   │   ├── app/           # App router pages
+│   │   ├── components/    # Reusable UI components
+│   │   ├── contexts/      # React contexts
+│   │   ├── hooks/         # Custom hooks
+│   │   ├── lib/           # Utilities
+│   │   ├── services/      # API service layer
+│   │   └── types/         # TypeScript types
+│   └── public/            # Static assets
+│
+└── ims-backend/           # Express backend API
+    ├── src/
+    │   ├── config/        # Configuration files
+    │   ├── controllers/   # Route controllers
+    │   ├── entities/      # TypeORM entities
+    │   ├── middleware/    # Express middleware
+    │   ├── routes/        # API routes
+    │   ├── services/      # Business logic
+    │   └── utils/         # Utilities
+    └── build/             # Compiled JavaScript
+```
 
-## Deploy on Vercel
+## API Endpoints
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /api/auth/register | Register new user |
+| POST | /api/auth/login | User login |
+| GET | /api/products | List all products |
+| POST | /api/products | Create product |
+| GET | /api/sales | List sales |
+| POST | /api/sales | Record sale |
+| POST | /api/ai/chat | AI assistant query |
+| GET | /api/users | List users (admin) |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Full API documentation available at `/api-docs` when running the backend.
+
+## Deployment
+
+### Frontend (Vercel)
+```bash
+cd ims-frontend
+vercel deploy
+```
+
+### Backend (Render/Railway)
+```bash
+cd ims-backend
+npm run build
+npm start
+```
+
+## License
+
+MIT
+
+## Author
+
+Naol Tamrat - [GitHub](https://github.com/Naolt)
